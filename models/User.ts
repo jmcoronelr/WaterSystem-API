@@ -6,5 +6,5 @@ export interface User extends Person {
   ci: Number;
   house_number: Number;
   bills: Array<Bill>;
-  asistances: Array<Asist>;
+  assists: Array<Asist>;
 }
