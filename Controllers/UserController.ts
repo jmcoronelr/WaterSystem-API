@@ -9,12 +9,20 @@ const getUsers = (req: Request, res: Response) => {
   });
 };
 
-const getUserById = (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  pool.query(queries.getUserByID, [id], (error, results) => {
-    if (error) throw error;
-    res.status(200).json(results.rows);
-  });
+const getUserById = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    const results = await pool.query(queries.getUserByID, [id]);
+
+    if (results.rows.length > 0) {
+      res.status(200).json(results.rows);
+    } else {
+      res.status(404).send("User doesn't exits!");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 };
 
 const createUser = async (req: Request, res: Response) => {
@@ -109,8 +117,8 @@ const updateUserPass = async (req: Request, res: Response) => {
     if (!userExits) {
       res.status(404).send("User doesn't exits !");
     } else {
-      const {password} = req.body;
-      await pool.query(queries.updateUserPass, [password, userid]);
+      const { password } = req.body;
+      pool.query(queries.updateUserPass, [password, userid]);
       res.status(200).send("User Password updated successfully!");
     }
   } catch (error) {
